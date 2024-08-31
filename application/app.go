@@ -17,7 +17,9 @@ type App struct {
 	db     *pgxpool.Pool
 }
 
-func initializeDatabase() *pgxpool.Pool {
+var DB *pgxpool.Pool
+
+func (a *App) InitializeDatabase() *pgxpool.Pool {
 	err := godotenv.Load()
 	if err != nil {
 		fmt.Println("Error loading .env file")
@@ -32,7 +34,7 @@ func initializeDatabase() *pgxpool.Pool {
 		log.Fatal("failed to parse dbUrl")
 	}
 
-	pool, err := pgxpool.NewWithConfig(context.Background(), config)
+	DB, err := pgxpool.NewWithConfig(context.Background(), config)
 	if err != nil {
 		log.Fatal("failed to make connection pool")
 	}
@@ -40,14 +42,12 @@ func initializeDatabase() *pgxpool.Pool {
 	fmt.Println("Database connected")
 	// defer pool.Close()
 
-	return pool
+	return DB
 }
 
 func New() *App {
-	app := &App{
-		db: initializeDatabase(),
-	}
-	//app.loadRoutes()
+	app := &App{}
+	app.loadRoutes()
 	return app
 }
 

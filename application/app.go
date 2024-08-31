@@ -3,46 +3,12 @@ package application
 import (
 	"context"
 	"fmt"
-	"log"
 	"net/http"
-	"os"
 	"time"
-
-	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/joho/godotenv"
 )
 
 type App struct {
 	router http.Handler
-	db     *pgxpool.Pool
-}
-
-var DB *pgxpool.Pool
-
-func (a *App) InitializeDatabase() *pgxpool.Pool {
-	err := godotenv.Load()
-	if err != nil {
-		fmt.Println("Error loading .env file")
-		os.Exit(1)
-	}
-	dbURL := os.Getenv("DB_URL")
-	if dbURL == "" {
-		log.Fatal("db url empty")
-	}
-	config, err := pgxpool.ParseConfig(dbURL)
-	if err != nil {
-		log.Fatal("failed to parse dbUrl")
-	}
-
-	DB, err := pgxpool.NewWithConfig(context.Background(), config)
-	if err != nil {
-		log.Fatal("failed to make connection pool")
-	}
-
-	fmt.Println("Database connected")
-	// defer pool.Close()
-
-	return DB
 }
 
 func New() *App {

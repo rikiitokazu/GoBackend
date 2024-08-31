@@ -1,4 +1,4 @@
-package controllersUserSetup
+package user_profile
 
 import (
 	"encoding/json"
@@ -6,7 +6,7 @@ import (
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/rikiitokazu/go-backend/models"
-	"github.com/rikiitokazu/go-backend/models/databaseUserSetup"
+	"github.com/rikiitokazu/go-backend/models/user_profile_db"
 )
 
 type Database struct {
@@ -35,9 +35,10 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
 		UserInfo: req,
 		Status:   "success",
 	}
-	successStatus := databaseUserSetup.RegisterUserInData(req)
+	successStatus := user_profile_db.RegisterUserInData(&req)
 	if successStatus["successStatus"] != "true" {
 		http.Error(w, successStatus["successStatus"], http.StatusBadRequest)
+		return
 	}
 
 	jsonResponse, err := json.Marshal(response)

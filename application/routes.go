@@ -6,7 +6,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
-	"github.com/rikiitokazu/go-backend/controllers/controllersUserSetup"
+	"github.com/rikiitokazu/go-backend/controllers/user_profile"
 )
 
 func (a *App) loadRoutes() {
@@ -34,7 +34,7 @@ func (a *App) loadRoutes() {
 	// router.Route("/config", loadConfigRoute)
 	// router.Route("/create-checkout-session", a.loadCheckoutRoute)
 	// router.Route("/session-status", loadRetrieveRoute)
-	router.Route("/user_setup", a.loadUserSetupRoutes)
+	router.Route("/user_profile", a.loadUserSetupRoutes)
 	// router.Route("/webhook", a.loadWebhookRouter)
 
 	/*
@@ -74,7 +74,7 @@ func (a *App) loadUserSetupRoutes(router chi.Router) {
 
 	// router.Post("/check-active-user", databaseConn.CheckActiveUser)
 	// router.Post("/verify-email", databaseConn.VerifyEmail)
-	router.Post("/register", controllersUserSetup.RegisterUser)
+	router.Post("/register", user_profile.RegisterUser)
 	// router.Post("/login", databaseConn.Login)
 	// router.Post("/user_course", databaseConn.GetUserCourse)
 }

@@ -1,16 +1,22 @@
-package databaseUserSetup
+package user_profile_db
 
 import (
 	"context"
+	"log"
 	"time"
 
-	"github.com/rikiitokazu/go-backend/application"
+	"github.com/rikiitokazu/go-backend/database"
 	"github.com/rikiitokazu/go-backend/models"
 	"golang.org/x/crypto/bcrypt"
 )
 
 func RegisterUserInData(req *models.User) map[string]string {
-	pool := application.DB
+	if database.DB == nil {
+		log.Println("FAILURE")
+		var maps map[string]string
+		return maps
+	}
+	pool := database.DB
 	userSuccess := make(map[string]string)
 	// Determine if email already exists
 	var emailExists bool

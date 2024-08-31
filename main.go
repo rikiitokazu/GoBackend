@@ -8,6 +8,7 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/rikiitokazu/go-backend/application"
+	"github.com/rikiitokazu/go-backend/database"
 	"github.com/stripe/stripe-go/v78"
 )
 
@@ -30,9 +31,11 @@ func init() {
  * Main function
  */
 func main() {
-	// Initializaing app and database
+	// Initializaing app
 	app := application.New()
-	app.InitializeDatabase()
+
+	// Initalize database
+	database.InitializeDatabase()
 
 	// Loads Stripe
 	stripe.Key = os.Getenv("STRIPE_SECRET_KEY")

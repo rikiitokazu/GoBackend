@@ -13,3 +13,8 @@ type User struct {
 	DateCreated       time.Time `json:"date_created"`
 	LastActive        time.Time `json:"last_active"`
 }
+
+type LoginAuth struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}

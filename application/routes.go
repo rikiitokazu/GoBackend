@@ -75,7 +75,8 @@ func (a *App) loadUserSetupRoutes(router chi.Router) {
 	// router.Post("/check-active-user", databaseConn.CheckActiveUser)
 	// router.Post("/verify-email", databaseConn.VerifyEmail)
 	router.Post("/register", user_profile.RegisterUser)
-	// router.Post("/login", databaseConn.Login)
+	router.Post("/login", user_profile.Login)
+
 	// router.Post("/user_course", databaseConn.GetUserCourse)
 }
 

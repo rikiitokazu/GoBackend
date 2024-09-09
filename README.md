@@ -1,4 +1,4 @@
-# Go Backend
+# A template for backend projects in Go 
 
 ## Technologies
 * [Go](https://go.dev/) 

@@ -13,6 +13,7 @@ import (
 )
 
 // TODO: use log.Fatal vs log.Panic
+// TODO: fix air config
 // TODO: error with localhost:8000 not gracefully shutdown
 /* TODO: It is actually a pretty bad idea in microservices to "just exit" when encountering an error such as an external resource being unavailable available (database, cache, ...). The reason for this is that when this external resource suddenly causes errors, it is very likely that this will be an issue for many other microservice instances, causing a storm of microservices restarting, making troubleshooting issues and recovering much harder. What you ideally need to do is internally retry with a backoff timer and reconnect yourself.*/
 // TODO: 'air' doesn't work, localhost is not terminated on graceful shutdown
@@ -23,7 +24,7 @@ import (
 func init() {
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("failed to load env variables")
+		log.Fatal("failed to load env variables", err)
 	}
 }
 

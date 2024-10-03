@@ -6,7 +6,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
-	"github.com/rikiitokazu/go-backend/controllers/user_profile"
+	"github.com/rikiitokazu/go-backend/internal/user_profile"
 )
 
 func (a *App) loadRoutes() {

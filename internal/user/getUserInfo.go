@@ -1,4 +1,4 @@
-package UserInfo
+package user
 
 /*
 import (

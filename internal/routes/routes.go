@@ -6,7 +6,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
-	"github.com/rikiitokazu/go-backend/internal/user_profile"
+	"github.com/rikiitokazu/go-backend/internal/validation"
 )
 
 func (a *App) loadRoutes() {
@@ -74,8 +74,8 @@ func (a *App) loadUserSetupRoutes(router chi.Router) {
 
 	// router.Post("/check-active-user", databaseConn.CheckActiveUser)
 	// router.Post("/verify-email", databaseConn.VerifyEmail)
-	router.Post("/register", user_profile.RegisterUser)
-	router.Post("/login", user_profile.Login)
+	router.Post("/register", validation.RegisterUser)
+	router.Post("/login", validation.Login)
 
 	// router.Post("/user_course", databaseConn.GetUserCourse)
 }

@@ -1,4 +1,4 @@
-package user_profile_db
+package db
 
 import (
 	"context"

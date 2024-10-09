@@ -7,7 +7,7 @@ import (
 	"os/signal"
 
 	"github.com/joho/godotenv"
-	"github.com/rikiitokazu/go-backend/internal/config"
+	"github.com/rikiitokazu/go-backend/internal/api"
 	"github.com/rikiitokazu/go-backend/internal/db"
 	"github.com/stripe/stripe-go/v78"
 )
@@ -30,11 +30,11 @@ func main() {
 		log.Fatal("failed to load env variables", err)
 	}
 
-	// Initializaing app
-	app := config.CreateNewApp()
-
 	// Initalize database
-	db.CreateDatabase()
+	db := db.CreateDatabase()
+
+	// Initializaing app
+	app := api.CreateNewApp(db)
 
 	// Loads Stripe
 	stripe.Key = os.Getenv("STRIPE_SECRET_KEY")

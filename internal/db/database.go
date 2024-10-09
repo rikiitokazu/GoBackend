@@ -10,7 +10,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
-var DB *pgxpool.Pool
+// var DB *pgxpool.Pool
 
 func CreateDatabase() *pgxpool.Pool {
 	err := godotenv.Load()
@@ -28,7 +28,7 @@ func CreateDatabase() *pgxpool.Pool {
 	}
 
 	// Make sure you don't do := because this will not refer to the global DB var
-	DB, err = pgxpool.NewWithConfig(context.Background(), config)
+	DB, err := pgxpool.NewWithConfig(context.Background(), config)
 	if err != nil {
 		log.Fatal("failed to make connection pool")
 	}

@@ -6,10 +6,11 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
-	"github.com/rikiitokazu/go-backend/internal/handlers/auth"
+	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/rikiitokazu/go-backend/internal/api/handlers/auth"
 )
 
-func LoadRoutes() *chi.Mux {
+func LoadRoutes(db *pgxpool.Pool) *chi.Mux {
 	router := chi.NewRouter()
 	router.Use(middleware.Logger)
 

@@ -1,15 +1,16 @@
 package handlers
 
 import (
+	"github.com/rikiitokazu/go-backend/internal/api/handlers/user"
 	"github.com/rikiitokazu/go-backend/internal/db/repositories"
 )
 
 type Handlers struct {
-	AuthHandler *AuthHandler
+	UserHandler *user.UserHandler
 }
 
-func NewHandlers(ar *repositories.AuthRepository) *Handlers {
+func NewHandlers(ur *repositories.UserRepository) *Handlers {
 	return &Handlers{
-		AuthHandler: NewAuthHandler(ar),
+		UserHandler: user.NewUserHandler(ur),
 	}
 }

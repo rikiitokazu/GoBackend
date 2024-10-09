@@ -5,13 +5,13 @@ import (
 )
 
 type Repositories struct {
-	AuthRepository *AuthRepository
+	UserRepository *UserRepository
 	// CourseRepository *CourseRepository
 }
 
 func NewRepositories(db *pgxpool.Pool) *Repositories {
 	return &Repositories{
-		AuthRepository: NewAuthRepository(db),
+		UserRepository: NewUserRepository(db),
 		// CourseRepository: NewCourseRepository(db),
 	}
 }

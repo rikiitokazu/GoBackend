@@ -1,4 +1,4 @@
-package auth
+package user
 
 import (
 	"encoding/json"
@@ -9,17 +9,17 @@ import (
 	"github.com/rikiitokazu/go-backend/internal/db/repositories"
 )
 
-type AuthHandler struct {
-	AuthRepository *repositories.AuthRepository
+type UserHandler struct {
+	UserRepository *repositories.UserRepository
 }
 
-func NewAuthHandler(ar *repositories.AuthRepository) *AuthHandler {
-	return &AuthHandler{
-		AuthRepository: ar,
+func NewUserHandler(ur *repositories.UserRepository) *UserHandler {
+	return &UserHandler{
+		UserRepository: ur,
 	}
 }
 
-func (ah *AuthHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
+func (uh *UserHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 	var user models.User
 	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -44,7 +44,7 @@ func (ah *AuthHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 	// 	Password: req.Password,
 	// }
 
-	if err := ah.AuthRepository.Create(&user); err != nil {
+	if err := uh.UserRepository.Register(&user); err != nil {
 		log.Fatal("failed to create user in db", err)
 		return
 	}
@@ -65,4 +65,6 @@ func (ah *AuthHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(jsonResponse)
+
+	// TODO: return value?
 }

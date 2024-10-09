@@ -1,6 +1,8 @@
 package handlers
 
-import "github.com/rikiitokazu/go-backend/internal/db/repositories"
+import (
+	"github.com/rikiitokazu/go-backend/internal/db/repositories"
+)
 
 type Handlers struct {
 	AuthHandler *AuthHandler

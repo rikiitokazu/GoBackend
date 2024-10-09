@@ -27,7 +27,6 @@ func CreateDatabase() *pgxpool.Pool {
 		log.Fatal("failed to parse dbUrl")
 	}
 
-	// Make sure you don't do := because this will not refer to the global DB var
 	DB, err := pgxpool.NewWithConfig(context.Background(), config)
 	if err != nil {
 		log.Fatal("failed to make connection pool")

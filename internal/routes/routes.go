@@ -6,15 +6,17 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
-	"github.com/rikiitokazu/go-backend/internal/auth"
+	"github.com/rikiitokazu/go-backend/internal/handlers/auth"
 )
 
-func (a *App) loadRoutes() {
+func LoadRoutes() *chi.Mux {
 	router := chi.NewRouter()
 	router.Use(middleware.Logger)
 
 	// allow CORS
 	router.Use(cors.Handler(cors.Options{
+		// the receiver's router field, so that it can be used in other
+		// functions.
 		// AllowedOrigins:   []string{"https://foo.com"}, // Use this to allow specific origin hosts
 		AllowedOrigins: []string{"https://*", "http://*"},
 		// AllowOriginFunc:  func(r *http.Request, origin string) bool { return true },
@@ -34,14 +36,15 @@ func (a *App) loadRoutes() {
 	// router.Route("/config", loadConfigRoute)
 	// router.Route("/create-checkout-session", a.loadCheckoutRoute)
 	// router.Route("/session-status", loadRetrieveRoute)
-	router.Route("/user_profile", a.loadUserSetupRoutes)
+	router.Route("/user_profile", loadUserSetupRoutes)
 	// router.Route("/webhook", a.loadWebhookRouter)
 
 	/*
 	 Ensuring we can use the router across functions,
 	 as long as it is a function with a receiver argument
 	*/
-	a.router = router
+
+	return router
 }
 
 /*
@@ -70,7 +73,7 @@ Retruns stripe publishable key
 // }
 
 // // All functions/routes related to the database
-func (a *App) loadUserSetupRoutes(router chi.Router) {
+func loadUserSetupRoutes(router chi.Router) {
 
 	// router.Post("/check-active-user", databaseConn.CheckActiveUser)
 	// router.Post("/verify-email", databaseConn.VerifyEmail)

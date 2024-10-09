@@ -5,15 +5,18 @@ import (
 	"fmt"
 	"net/http"
 	"time"
+
+	"github.com/rikiitokazu/go-backend/internal/routes"
 )
 
 type App struct {
 	router http.Handler
 }
 
-func New() *App {
+func CreateNewApp() *App {
 	app := &App{}
-	app.loadRoutes()
+	router := routes.LoadRoutes()
+	app.router = router
 	return app
 }
 

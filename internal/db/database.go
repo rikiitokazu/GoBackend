@@ -12,7 +12,7 @@ import (
 
 var DB *pgxpool.Pool
 
-func InitializeDatabase() *pgxpool.Pool {
+func CreateDatabase() *pgxpool.Pool {
 	err := godotenv.Load()
 	if err != nil {
 		log.Println("Error loading .env file")

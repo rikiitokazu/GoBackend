@@ -2,24 +2,33 @@ package api
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"net/http"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/rikiitokazu/go-backend/internal/api/handlers"
 	"github.com/rikiitokazu/go-backend/internal/api/routes"
+	"github.com/rikiitokazu/go-backend/internal/db/repositories"
 )
 
 type App struct {
 	router http.Handler
 	// add other configurations here
-	// add another config folder with all configurations
+	// TODO: add another config folder with all configurations
 }
 
-func CreateNewApp(db *pgxpool.Pool) *App {
+func InitializeHandlers(r *repositories.Repositories) *handlers.Handlers {
+	return handlers.NewHandlers(r.UserRepository)
+}
+
+func InitializeRepositories(db *pgxpool.Pool) *repositories.Repositories {
+	return repositories.NewRepositories(db)
+}
+
+func CreateNewApp(db *pgxpool.Pool, hd *handlers.Handlers) *App {
 	app := &App{}
-	router := routes.LoadRoutes(db)
+	router := routes.LoadRoutes(db, hd)
 	app.router = router
 	return app
 }
@@ -50,14 +59,6 @@ func (a *App) Start(ctx context.Context) error {
 		return server.Shutdown(timeout)
 	}
 
-}
-
-func InitializeHandlers(r *repositories.Repositories) *handlers.Handlers {
-	return handlers.NewHandlers(r.UserRepository)
-}
-
-func InitializeRepositories(db *sql.DB) *repositories.Repositories {
-	return repositories.NewRepositories(db)
 }
 
 // query := `

@@ -33,8 +33,16 @@ func main() {
 	// Initalize database
 	db := db.CreateDatabase()
 
+	// TODO: defer db.Close()
+
+	// Initialize repositories (data-access layer)
+	repo := api.InitializeRepositories(db)
+
+	// Initialize handlers (handler layer)
+	handlers := api.InitializeHandlers(repo)
+
 	// Initializaing app
-	app := api.CreateNewApp(db)
+	app := api.CreateNewApp(db, handlers)
 
 	// Loads Stripe
 	stripe.Key = os.Getenv("STRIPE_SECRET_KEY")

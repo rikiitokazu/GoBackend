@@ -7,10 +7,11 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/rikiitokazu/go-backend/internal/api/handlers/auth"
+	"github.com/rikiitokazu/go-backend/internal/api/handlers"
+	"github.com/rikiitokazu/go-backend/internal/api/handlers/user"
 )
 
-func LoadRoutes(db *pgxpool.Pool) *chi.Mux {
+func LoadRoutes(db *pgxpool.Pool, h *handlers.Handlers) *chi.Mux {
 	router := chi.NewRouter()
 	router.Use(middleware.Logger)
 
@@ -33,11 +34,17 @@ func LoadRoutes(db *pgxpool.Pool) *chi.Mux {
 		w.WriteHeader(http.StatusOK)
 	})
 
+	// test := &Test{
+	// 	db: h,
+	// }
+
 	// Subrouters
 	// router.Route("/config", loadConfigRoute)
 	// router.Route("/create-checkout-session", a.loadCheckoutRoute)
 	// router.Route("/session-status", loadRetrieveRoute)
-	router.Route("/user_profile", loadUserSetupRoutes)
+	router.Route("/user_profile", func(router chi.Router) {
+		loadUserSetupRoutes(router, h)
+	})
 	// router.Route("/webhook", a.loadWebhookRouter)
 
 	/*
@@ -74,12 +81,12 @@ Retruns stripe publishable key
 // }
 
 // // All functions/routes related to the database
-func loadUserSetupRoutes(router chi.Router) {
+func loadUserSetupRoutes(router chi.Router, h *handlers.Handlers) {
 
 	// router.Post("/check-active-user", databaseConn.CheckActiveUser)
 	// router.Post("/verify-email", databaseConn.VerifyEmail)
-	router.Post("/register", auth.RegisterUser)
-	router.Post("/login", auth.Login)
+	router.Post("/register", h.UserHandler.RegisterUser)
+	router.Post("/login", user.Login)
 
 	// router.Post("/user_course", databaseConn.GetUserCourse)
 }

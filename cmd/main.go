@@ -9,6 +9,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/rikiitokazu/go-backend/internal/api"
 	"github.com/rikiitokazu/go-backend/internal/db"
+	"github.com/rikiitokazu/go-backend/internal/logger"
 	"github.com/stripe/stripe-go/v78"
 )
 
@@ -24,6 +25,9 @@ import (
  */
 func main() {
 	// TODO: initialize logger
+	logger.InitLogger()
+	defer logger.CloseLogger()
+
 	// load env variables
 	err := godotenv.Load()
 	if err != nil {

@@ -10,8 +10,6 @@ import (
 	"github.com/joho/godotenv"
 )
 
-// var DB *pgxpool.Pool
-
 func CreateDatabase() *pgxpool.Pool {
 	err := godotenv.Load()
 	if err != nil {

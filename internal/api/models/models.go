@@ -18,3 +18,9 @@ type LoginAuth struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
+
+type ErrorStatement struct {
+	Id    int    `json:"id"`
+	Email string `json:"email"`
+	Error string `json:"error"`
+}

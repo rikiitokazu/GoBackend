@@ -8,12 +8,11 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/rikiitokazu/go-backend/models"
-	"github.com/rikiitokazu/go-backend/models/user_profile_db"
+	"github.com/rikiitokazu/go-backend/internal/api/models"
 )
 
 func (uh *UserHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
-	var req models.LoginAuth
+	var req models.User
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -21,7 +20,7 @@ func (uh *UserHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
 
 	// Because we used a struct value with type string, we compare the actual "nil"
 	// TODO: Is there a better way to do this?
-	response := user_profile_db.VerifyUserLogin(req)
+	response := uh.UserRepository.VerifyUserExists(&req)
 	if response.Error != "nil" {
 		http.Error(w, response.Error, http.StatusBadRequest)
 	}

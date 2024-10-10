@@ -25,6 +25,53 @@ func NewUserRepository(db *pgxpool.Pool) *UserRepository {
 	}
 }
 
+func (ur *UserRepository) VerifyUserExists(user *models.User) models.ErrorStatement {
+	pool := ur.db
+	var userID int
+	var userEmail string
+	query := `
+		SELECT id, email
+		FROM users
+		WHERE email = $1
+	`
+	err := pool.QueryRow(context.Background(), query, user.Email).Scan(&userID, &userEmail)
+	if err != nil {
+		log.Println(err.Error())
+		return models.ErrorStatement{
+			Error: err.Error(),
+		}
+	}
+	if userEmail == "" {
+		return models.ErrorStatement{
+			Error: "Email doesn't exist",
+		}
+	}
+
+	// Compare the request password with corresponding password hash
+	var dbPass string
+	query = `SELECT password from users
+	WHERE email = $1`
+	err = pool.QueryRow(context.Background(), query, user.Email).Scan(&dbPass)
+	if err != nil {
+		return models.ErrorStatement{
+			Error: err.Error(),
+		}
+	}
+
+	// Does the password match?
+	err = bcrypt.CompareHashAndPassword([]byte(dbPass), []byte(user.Password))
+	if err != nil {
+		return models.ErrorStatement{
+			Error: err.Error(),
+		}
+	}
+	return models.ErrorStatement{
+		Id:    userID,
+		Email: userEmail,
+		Error: "nil",
+	}
+}
+
 func (ur *UserRepository) Register(user *models.User) error {
 	pool := ur.db
 	if pool == nil {

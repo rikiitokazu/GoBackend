@@ -12,7 +12,7 @@ import (
 	"github.com/rikiitokazu/go-backend/models/user_profile_db"
 )
 
-func Login(w http.ResponseWriter, r *http.Request) {
+func (uh *UserHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
 	var req models.LoginAuth
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)

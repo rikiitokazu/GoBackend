@@ -25,6 +25,8 @@ func NewUserRepository(db *pgxpool.Pool) *UserRepository {
 	}
 }
 
+// TODO: Does models.LoginAuth need to be a pointer?
+// TODO: refactor db to be a method receiver
 func (ur *UserRepository) VerifyUserExists(user *models.User) error {
 	pool := ur.db
 	var userID int
@@ -39,7 +41,7 @@ func (ur *UserRepository) VerifyUserExists(user *models.User) error {
 		return err
 	}
 	if user.Email == "" {
-		return errors.New("Email doesn't exist")
+		return errors.New("email doesn't exist")
 	}
 	return nil
 }

@@ -8,7 +8,6 @@ import (
 	"github.com/go-chi/cors"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/rikiitokazu/go-backend/internal/api/handlers"
-	"github.com/rikiitokazu/go-backend/internal/api/handlers/user"
 )
 
 func LoadRoutes(db *pgxpool.Pool, h *handlers.Handlers) *chi.Mux {
@@ -42,7 +41,7 @@ func LoadRoutes(db *pgxpool.Pool, h *handlers.Handlers) *chi.Mux {
 	// router.Route("/config", loadConfigRoute)
 	// router.Route("/create-checkout-session", a.loadCheckoutRoute)
 	// router.Route("/session-status", loadRetrieveRoute)
-	router.Route("/user_profile", func(router chi.Router) {
+	router.Route("/user", func(router chi.Router) {
 		loadUserSetupRoutes(router, h)
 	})
 	// router.Route("/webhook", a.loadWebhookRouter)
@@ -86,7 +85,7 @@ func loadUserSetupRoutes(router chi.Router, h *handlers.Handlers) {
 	// router.Post("/check-active-user", databaseConn.CheckActiveUser)
 	// router.Post("/verify-email", databaseConn.VerifyEmail)
 	router.Post("/register", h.UserHandler.RegisterUser)
-	router.Post("/login", user.Login)
+	router.Post("/login", h.UserHandler.LoginUser)
 
 	// router.Post("/user_course", databaseConn.GetUserCourse)
 }

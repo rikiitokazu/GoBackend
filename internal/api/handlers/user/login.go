@@ -21,14 +21,23 @@ func (uh *UserHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
 
 	// Because we used a struct value with type string, we compare the actual "nil"
 	// TODO: Is there a better way to do this?
-	response := uh.UserRepository.VerifyUserExists(&req)
-	if response.Error != "nil" {
-		http.Error(w, response.Error, http.StatusBadRequest)
+	// TODO: is the return value necessary, or does the http.Error do it?
+	err := uh.UserRepository.VerifyUserExists(&req)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// Given user exists, validate is password is correct
+	err = uh.UserRepository.Login(&req)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 
 	// Generate a jwt token
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"sub": response.Id,
+		"sub": req.CustomerID,
 		"exp": time.Now().Add(time.Minute * 1).Unix(),
 	})
 	tokenString, err := token.SignedString([]byte(os.Getenv("TOKEN_SECRET")))
@@ -49,6 +58,7 @@ func (uh *UserHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// send it back
+	// TODO: cookies or cache
 	cookie := http.Cookie{
 		Name:     "Authorization",
 		Value:    res.Token,

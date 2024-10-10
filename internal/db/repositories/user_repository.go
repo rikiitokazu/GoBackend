@@ -32,7 +32,6 @@ func (ur *UserRepository) Register(user *models.User) error {
 		var maps map[string]string
 		return maps
 	}
-	pool := database.DB
 	userSuccess := make(map[string]string)
 	// Determine if email already exists
 	var emailExists bool

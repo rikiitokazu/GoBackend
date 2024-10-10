@@ -11,6 +11,7 @@ import (
 	"github.com/rikiitokazu/go-backend/internal/api/models"
 )
 
+// TODO: do http methods need to return something?
 func (uh *UserHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
 	var req models.User
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {

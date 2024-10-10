@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"context"
+	"errors"
 	"log"
 	"time"
 
@@ -25,7 +26,7 @@ func NewUserRepository(db *pgxpool.Pool) *UserRepository {
 	}
 }
 
-func (ur *UserRepository) VerifyUserExists(user *models.User) models.ErrorStatement {
+func (ur *UserRepository) VerifyUserExists(user *models.User) error {
 	pool := ur.db
 	var userID int
 	var userEmail string
@@ -36,40 +37,30 @@ func (ur *UserRepository) VerifyUserExists(user *models.User) models.ErrorStatem
 	`
 	err := pool.QueryRow(context.Background(), query, user.Email).Scan(&userID, &userEmail)
 	if err != nil {
-		log.Println(err.Error())
-		return models.ErrorStatement{
-			Error: err.Error(),
-		}
+		return err
 	}
-	if userEmail == "" {
-		return models.ErrorStatement{
-			Error: "Email doesn't exist",
-		}
+	if user.Email == "" {
+		return errors.New("Email doesn't exist")
 	}
+	return nil
+}
 
-	// Compare the request password with corresponding password hash
-	var dbPass string
-	query = `SELECT password from users
+func (ur *UserRepository) Login(user *models.User) error {
+	pool := ur.db
+	var encryptedPassword string
+	query := `SELECT password from users
 	WHERE email = $1`
-	err = pool.QueryRow(context.Background(), query, user.Email).Scan(&dbPass)
+	err := pool.QueryRow(context.Background(), query, user.Email).Scan(&encryptedPassword)
 	if err != nil {
-		return models.ErrorStatement{
-			Error: err.Error(),
-		}
+		return err
 	}
 
 	// Does the password match?
-	err = bcrypt.CompareHashAndPassword([]byte(dbPass), []byte(user.Password))
+	err = bcrypt.CompareHashAndPassword([]byte(encryptedPassword), []byte(user.Password))
 	if err != nil {
-		return models.ErrorStatement{
-			Error: err.Error(),
-		}
+		return err
 	}
-	return models.ErrorStatement{
-		Id:    userID,
-		Email: userEmail,
-		Error: "nil",
-	}
+	return nil
 }
 
 func (ur *UserRepository) Register(user *models.User) error {

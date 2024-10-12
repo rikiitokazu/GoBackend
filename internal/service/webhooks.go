@@ -1,4 +1,4 @@
-package stripe
+package service
 
 import (
 	"encoding/json"
@@ -10,7 +10,7 @@ import (
 	"github.com/stripe/stripe-go/v78"
 )
 
-func (p *Payment) HandleWebhook(w http.ResponseWriter, r *http.Request) {
+func HandleWebhook(w http.ResponseWriter, r *http.Request) {
 	const MaxBodyBytes = int64(65536)
 	r.Body = http.MaxBytesReader(w, r.Body, MaxBodyBytes)
 	payload, err := io.ReadAll(r.Body)
@@ -48,7 +48,7 @@ func (p *Payment) HandleWebhook(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		p.DatabaseConn.AddUserInformation(paymentIntent)
+		// p.DatabaseConn.AddUserInformation(paymentIntent)
 
 		// Then define and call a func to handle the successful payment intent.
 		// handlePaymentIntentSucceeded(paymentIntent)

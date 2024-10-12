@@ -98,3 +98,13 @@ func (ur *UserRepository) Register(user *models.User) error {
 	}
 	return nil
 }
+
+// helper
+func (ur *UserRepository) CourseAvailability(crs *models.EnrollRequest) error {
+
+	return nil
+}
+func (ur *UserRepository) EnrollCourse(crs *models.EnrollRequest) error {
+
+	return nil
+}

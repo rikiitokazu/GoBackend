@@ -1,4 +1,4 @@
-package stripe
+package service
 
 import (
 	"encoding/json"
@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/joho/godotenv"
-	"github.com/ritokazu/go-backend/database"
 	"github.com/stripe/stripe-go/v78"
 	"github.com/stripe/stripe-go/v78/checkout/session"
 	"github.com/stripe/stripe-go/v78/customer"
@@ -20,11 +19,7 @@ type CheckoutSessionRequest struct {
 	CourseNumber string `json:"course_number"`
 }
 
-type Payment struct {
-	DatabaseConn *database.Database
-}
-
-func (p *Payment) CreateCheckoutSession(w http.ResponseWriter, r *http.Request) {
+func CreateCheckoutSession(w http.ResponseWriter, r *http.Request) {
 	err := godotenv.Load()
 	if err != nil {
 		log.Println("Couldn't load environment vars")

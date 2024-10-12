@@ -19,8 +19,7 @@ type LoginAuth struct {
 	Password string `json:"password"`
 }
 
-type ErrorStatement struct {
-	Id      int    `json:"id"`
-	Email   string `json:"email"`
-	Message string `json:"message"`
+type EnrollRequest struct {
+	CourseNumber string    `json:"course_number"`
+	Date         time.Time `json:"date"`
 }

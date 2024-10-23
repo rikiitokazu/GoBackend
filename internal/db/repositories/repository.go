@@ -9,6 +9,7 @@ type Repositories struct {
 	// CourseRepository *CourseRepository
 }
 
+// TODO: SERIAL or UUID
 func NewRepositories(db *pgxpool.Pool) *Repositories {
 	return &Repositories{
 		UserRepository: NewUserRepository(db),

@@ -14,7 +14,7 @@ func (uh *UserHandler) EnrollCourse(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Check availability of course
+	// Check availability of course in "courses" table
 
 	// Enroll in stripe, if it is not free
 

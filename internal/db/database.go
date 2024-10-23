@@ -31,6 +31,7 @@ func CreateDatabase() *pgxpool.Pool {
 	}
 
 	fmt.Println("Database connected")
+	// TODO: Is is necessary to close?
 	// defer pool.Close()
 
 	return DB

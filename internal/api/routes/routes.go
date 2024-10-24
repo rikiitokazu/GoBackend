@@ -44,7 +44,7 @@ func LoadRoutes(db *pgxpool.Pool, h *handlers.Handlers) *chi.Mux {
 	router.Route("/user", func(router chi.Router) {
 		loadUserSetupRoutes(router, h)
 	})
-	router.Route("course", func(router chi.Router) {
+	router.Route("/course", func(router chi.Router) {
 		loadCourseSetupRoutes(router, h)
 	})
 	// router.Route("/webhook", a.loadWebhookRouter)

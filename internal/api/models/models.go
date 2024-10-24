@@ -20,6 +20,6 @@ type LoginAuth struct {
 }
 
 type EnrollRequest struct {
-	CourseNumber string    `json:"course_number"`
+	CourseNumber int       `json:"course_number"`
 	Date         time.Time `json:"date"`
 }

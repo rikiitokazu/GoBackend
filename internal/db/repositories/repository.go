@@ -5,14 +5,15 @@ import (
 )
 
 type Repositories struct {
-	UserRepository *UserRepository
-	// CourseRepository *CourseRepository
+	UserRepository   *UserRepository
+	CourseRepository *CourseRepository
 }
 
 // TODO: SERIAL or UUID
 func NewRepositories(db *pgxpool.Pool) *Repositories {
 	return &Repositories{
-		UserRepository: NewUserRepository(db),
+		UserRepository:   NewUserRepository(db),
+		CourseRepository: NewCourseRepository(db),
 		// CourseRepository: NewCourseRepository(db),
 	}
 }

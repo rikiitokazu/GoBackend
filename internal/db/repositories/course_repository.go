@@ -2,6 +2,8 @@ package repositories
 
 import (
 	"context"
+	"errors"
+	"log"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 
@@ -10,6 +12,7 @@ import (
 
 type CourseRepositoryInterface interface {
 	Enroll(*models.EnrollRequest) error
+	DropCourse(*models.EnrollRequest) error
 }
 
 type CourseRepository struct {
@@ -22,18 +25,34 @@ func NewCourseRepository(db *pgxpool.Pool) *CourseRepository {
 	}
 }
 
-func (cr *CourseRepository) EnrollCourse(user *models.EnrollRequest) error {
+func (cr *CourseRepository) EnrollCourse(course *models.EnrollRequest) error {
 	pool := cr.db
-	var userID int
-	var userEmail string
+	// Check if the course is still available.
+	// TODO: Waitlist
+	var students int
+	var capacity int
 	query := `
-		SELECT id, email
-		FROM users
-		WHERE email = $1
+		SELECT students, capacity
+		FROM courses
+		WHERE course_number = $1
+		AND active = true
 	`
-	err := pool.QueryRow(context.Background(), query, "placeholder").Scan(&userID, &userEmail)
+	err := pool.QueryRow(context.Background(), query, course.CourseNumber).Scan(&students, &capacity)
+	log.Println("students", students)
+	log.Println("capacity", capacity)
 	if err != nil {
-		return err
+		return errors.New("error parsing course registration data")
 	}
+	if capacity >= students {
+		return errors.New("course is full")
+	}
+
+	// Get jwt of the corresponding user, and then enroll them in a course by appending to the courses array
+
+	// Update course capacity += 1
+	return nil
+}
+
+func (cr *CourseRepository) DropCourse(*models.EnrollRequest) error {
 	return nil
 }

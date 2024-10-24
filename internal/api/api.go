@@ -19,7 +19,7 @@ type App struct {
 }
 
 func InitializeHandlers(r *repositories.Repositories) *handlers.Handlers {
-	return handlers.NewHandlers(r.UserRepository)
+	return handlers.NewHandlers(r.UserRepository, r.CourseRepository)
 }
 
 func InitializeRepositories(db *pgxpool.Pool) *repositories.Repositories {

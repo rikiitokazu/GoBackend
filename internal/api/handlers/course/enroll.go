@@ -18,15 +18,13 @@ func (ch *CourseHandler) EnrollCourse(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// Valid jwt
-	tokenString := r.Header.Get("Authorization")
-	if tokenString == "" {
-		w.WriteHeader(http.StatusUnauthorized)
-		log.Println("No jwt")
+	cookie, err := r.Cookie("Authorization")
+	if err != nil {
+		log.Println("Couldn't receive cookie")
 		return
 	}
-	tokenString = tokenString[len("Bearer: "):]
-
-	err := verifyToken(tokenString)
+	tokenString := cookie.Value
+	err = verifyToken(tokenString)
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
 		log.Println("Invalid jwt")

@@ -49,9 +49,9 @@ func (ur *UserRepository) VerifyUserExists(user *models.User) error {
 func (ur *UserRepository) Login(user *models.User) error {
 	pool := ur.db
 	var encryptedPassword string
-	query := `SELECT password from users
+	query := `SELECT id, password from users
 	WHERE email = $1`
-	err := pool.QueryRow(context.Background(), query, user.Email).Scan(&encryptedPassword)
+	err := pool.QueryRow(context.Background(), query, user.Email).Scan(&user.CustomerID, &encryptedPassword)
 	if err != nil {
 		return err
 	}
@@ -96,15 +96,5 @@ func (ur *UserRepository) Register(user *models.User) error {
 	if err != nil {
 		return err
 	}
-	return nil
-}
-
-// helper
-func (ur *UserRepository) CourseAvailability(crs *models.EnrollRequest) error {
-
-	return nil
-}
-func (ur *UserRepository) EnrollCourse(crs *models.EnrollRequest) error {
-
 	return nil
 }

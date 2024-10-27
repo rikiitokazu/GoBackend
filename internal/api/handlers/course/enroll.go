@@ -34,27 +34,21 @@ func (ch *CourseHandler) EnrollCourse(w http.ResponseWriter, r *http.Request) {
 	}
 	log.Println("Valid jwt")
 
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok && !token.Valid {
+		log.Println("Couldn't get claims")
+		return
+	}
+	currentUserId := claims["sub"].(float64)
+
 	// Check availability of course in "courses" table
-	err = ch.CourseRepository.EnrollCourse(&req)
+	err = ch.CourseRepository.EnrollCourse(&req, currentUserId)
 	if err != nil {
 		log.Println(err.Error())
 	}
-	// Enroll in stripe, if it is not free
-	// TODO: For right now, lets assume only course "1" is free
-	if req.CourseNumber != 1 {
-		// TODO: Integrate with stripe
-		log.Println("Enrolling in stripe")
-	}
 
-	claims, ok := token.Claims.(jwt.MapClaims)
-	if !ok {
-		log.Println("failed to get claims")
-		return
-	}
-	log.Println(claims)
-
-	// Check if the user is already in this course
 	// TODO: Change so that we use a UUID to act as a foreign key
+	// TODO: Unique identifier (customerId) for users, and unique identifier for courses
 
 	// Return http response
 }

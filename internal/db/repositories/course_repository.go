@@ -25,15 +25,15 @@ func NewCourseRepository(db *pgxpool.Pool) *CourseRepository {
 	}
 }
 
-func (cr *CourseRepository) EnrollCourse(course *models.EnrollRequest) error {
+func (cr *CourseRepository) EnrollCourse(course *models.EnrollRequest, userId float64) error {
 	pool := cr.db
-	// Check if the course is still available.
 
 	// Check if course.Number is valid
 	if course.CourseNumber <= 0 {
 		return errors.New("invalid course number")
 	}
 
+	// Check if the course is still available.
 	// TODO: Waitlist
 	var students int
 	var capacity int
@@ -52,13 +52,57 @@ func (cr *CourseRepository) EnrollCourse(course *models.EnrollRequest) error {
 	if students > capacity {
 		return errors.New("course is full")
 	}
+	// Enroll in stripe, if it is not free
+	// TODO: For right now, lets assume only course "1" is free
+	// if req.CourseNumber != 1 {
+	// 	log.Println("Enrolling in stripe")
+	// }
 
-	// Get jwt of the corresponding user, and then enroll them in a course by appending to the courses array
+	// Check if user is already enrolled in the course
+	err = cr.checkUserInCourse(userId)
+	if err != nil {
+		return err
+	}
 
 	// Update course capacity += 1
+	err = cr.addCountToCourse(course.CourseNumber)
+	if err != nil {
+		return err
+	}
+	// Update student count += 1, and append to registered_courses in users table
+
 	return nil
 }
 
+func (cr *CourseRepository) checkUserInCourse(userId float64) error {
+	pool := cr.db
+
+	var emailExists bool
+	query := `SELECT EXISTS(SELECT 1 FROM users WHERE id = $1);`
+	err := pool.QueryRow(context.Background(), query, userId).Scan(&emailExists)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (cr *CourseRepository) addCountToCourse(courseNum int) error {
+	pool := cr.db
+	query := `
+	UPDATE courses
+	SET students = students + 1
+	WHERE course_number = $1 and active = true
+	`
+	_, err := pool.Exec(context.Background(), query, courseNum)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (cr *CourseRepository) addCountToUserArray(userId float64, courseNum int) error {
+	return nil
+}
 func (cr *CourseRepository) DropCourse(*models.EnrollRequest) error {
 	return nil
 }

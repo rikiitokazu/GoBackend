@@ -28,6 +28,12 @@ func NewCourseRepository(db *pgxpool.Pool) *CourseRepository {
 func (cr *CourseRepository) EnrollCourse(course *models.EnrollRequest) error {
 	pool := cr.db
 	// Check if the course is still available.
+
+	// Check if course.Number is valid
+	if course.CourseNumber <= 0 {
+		return errors.New("invalid course number")
+	}
+
 	// TODO: Waitlist
 	var students int
 	var capacity int
@@ -41,9 +47,9 @@ func (cr *CourseRepository) EnrollCourse(course *models.EnrollRequest) error {
 	log.Println("students", students)
 	log.Println("capacity", capacity)
 	if err != nil {
-		return errors.New("error parsing course registration data")
+		return err
 	}
-	if capacity >= students {
+	if students > capacity {
 		return errors.New("course is full")
 	}
 

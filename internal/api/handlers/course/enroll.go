@@ -24,17 +24,18 @@ func (ch *CourseHandler) EnrollCourse(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	tokenString := cookie.Value
-	err = verifyToken(tokenString)
+	_, err = verifyToken(tokenString)
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
 		log.Println("Invalid jwt")
 		return
 	}
 	log.Println("Valid jwt")
+
 	// Check availability of course in "courses" table
 	err = ch.CourseRepository.EnrollCourse(&req)
 	if err != nil {
-		log.Println("error")
+		log.Println(err.Error())
 	}
 	// Enroll in stripe, if it is not free
 
@@ -44,18 +45,18 @@ func (ch *CourseHandler) EnrollCourse(w http.ResponseWriter, r *http.Request) {
 }
 
 // TODO: move to utils
-func verifyToken(tokenString string) error {
+func verifyToken(tokenString string) (*jwt.Token, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		return []byte(os.Getenv("TOKEN_SECRET")), nil
 	})
 
 	if err != nil {
-		return err
+		return token, err
 	}
 
 	if !token.Valid {
-		return errors.New("invalid jwt")
+		return token, errors.New("invalid jwt")
 	}
 
-	return nil
+	return token, nil
 }

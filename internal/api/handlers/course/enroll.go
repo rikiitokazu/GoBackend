@@ -1,5 +1,7 @@
 package course
 
+// TODO: We should probably use DynamoDB
+
 import (
 	"encoding/json"
 	"errors"
@@ -24,7 +26,7 @@ func (ch *CourseHandler) EnrollCourse(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	tokenString := cookie.Value
-	_, err = verifyToken(tokenString)
+	token, err := verifyToken(tokenString)
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
 		log.Println("Invalid jwt")
@@ -38,8 +40,21 @@ func (ch *CourseHandler) EnrollCourse(w http.ResponseWriter, r *http.Request) {
 		log.Println(err.Error())
 	}
 	// Enroll in stripe, if it is not free
+	// TODO: For right now, lets assume only course "1" is free
+	if req.CourseNumber != 1 {
+		// TODO: Integrate with stripe
+		log.Println("Enrolling in stripe")
+	}
 
-	// Add to database
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		log.Println("failed to get claims")
+		return
+	}
+	log.Println(claims)
+
+	// Check if the user is already in this course
+	// TODO: Change so that we use a UUID to act as a foreign key
 
 	// Return http response
 }

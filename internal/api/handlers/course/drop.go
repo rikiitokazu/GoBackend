@@ -42,7 +42,7 @@ func (ch *CourseHandler) DropCourse(w http.ResponseWriter, r *http.Request) {
 	}
 	currentUserId := claims["sub"].(float64)
 
-	// Call Drop, check error --> returns how long user was in course
+	// Call Drop, check error
 	err = ch.CourseRepository.DropCourse(&req, currentUserId)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -51,11 +51,11 @@ func (ch *CourseHandler) DropCourse(w http.ResponseWriter, r *http.Request) {
 
 	// Return response
 	response := struct {
-		Status        string    `json:"status"`
-		CourseDropped int       `json: course_dropped`
-		Duration      time.Time `json: duration`
+		Status        string `json:"status"`
+		CourseDropped int    `json:"course_dropped"`
 	}{
-		Status: "success",
+		Status:        "success",
+		CourseDropped: req.CourseNumber,
 	}
 
 	jsonResponse, err := json.Marshal(response)

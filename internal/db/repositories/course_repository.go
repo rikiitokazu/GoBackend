@@ -126,6 +126,53 @@ func (cr *CourseRepository) addCountToUserArray(userId float64, courseNum int) e
 	}
 	return nil
 }
+
+// TODO: Instead of active column, we could just do if it falls within a timeframe
 func (cr *CourseRepository) DropCourse(course *models.CourseRequest, userId float64) error {
+	pool := cr.db
+	// Check if the course exists
+	var courseExists bool
+	query := `SELECT EXISTS(
+	SELECT course_number, active
+	FROM courses
+	WHERE course_number = $1 AND active = true
+	);`
+	err := pool.QueryRow(context.Background(), query, course.CourseNumber).Scan(&courseExists)
+	if err != nil {
+		return err
+	}
+	if !courseExists {
+		return errors.New("course does not exist")
+	}
+
+	// Check if user is in course
+	// TODO: Probably redundant
+	err = cr.checkUserInCourse(userId, course.CourseNumber)
+	if err != nil {
+		return err
+	}
+
+	// Remove the element from the registered_courses column in the users table
+	query = `
+	UPDATE users
+	SET registered_courses = ARRAY_REMOVE(registered_courses, $1)
+	WHERE id = $2
+	`
+	_, err = pool.Exec(context.Background(), query, course.CourseNumber, userId)
+	if err != nil {
+		return err
+	}
+
+	// Subtract the number of enrolled people of that current, active course
+	query = `
+	UPDATE courses
+	SET students = students - 1
+	WHERE course_number = $1 AND active = true
+	`
+	_, err = pool.Exec(context.Background(), query, course.CourseNumber)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }

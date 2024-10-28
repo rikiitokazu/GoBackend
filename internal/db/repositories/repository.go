@@ -14,6 +14,5 @@ func NewRepositories(db *pgxpool.Pool) *Repositories {
 	return &Repositories{
 		UserRepository:   NewUserRepository(db),
 		CourseRepository: NewCourseRepository(db),
-		// CourseRepository: NewCourseRepository(db),
 	}
 }

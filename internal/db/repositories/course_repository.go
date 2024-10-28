@@ -59,7 +59,7 @@ func (cr *CourseRepository) EnrollCourse(course *models.EnrollRequest, userId fl
 	// }
 
 	// Check if user is already enrolled in the course
-	err = cr.checkUserInCourse(userId)
+	err = cr.checkUserInCourse(userId, course.CourseNumber)
 	if err != nil {
 		return err
 	}
@@ -70,18 +70,30 @@ func (cr *CourseRepository) EnrollCourse(course *models.EnrollRequest, userId fl
 		return err
 	}
 	// Update student count += 1, and append to registered_courses in users table
-
+	err = cr.addCountToUserArray(userId, course.CourseNumber)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
-func (cr *CourseRepository) checkUserInCourse(userId float64) error {
+// TODO: userId is currently float64 as a result of when we initialized it
+// TODO: return (error, HTTPstatus)
+func (cr *CourseRepository) checkUserInCourse(userId float64, courseNum int) error {
 	pool := cr.db
 
-	var emailExists bool
-	query := `SELECT EXISTS(SELECT 1 FROM users WHERE id = $1);`
-	err := pool.QueryRow(context.Background(), query, userId).Scan(&emailExists)
+	var userExists bool
+	query := `SELECT EXISTS(
+	SELECT id, registered_courses
+	FROM users 
+	WHERE id = $1 AND $2 = ANY(registered_courses)
+	);`
+	err := pool.QueryRow(context.Background(), query, userId, courseNum).Scan(&userExists)
 	if err != nil {
 		return err
+	}
+	if userExists {
+		return errors.New("user is already enrolled")
 	}
 	return nil
 }
@@ -97,10 +109,21 @@ func (cr *CourseRepository) addCountToCourse(courseNum int) error {
 	if err != nil {
 		return err
 	}
+	// TODO: create column for users
 	return nil
 }
 
 func (cr *CourseRepository) addCountToUserArray(userId float64, courseNum int) error {
+	pool := cr.db
+	query := `
+	UPDATE users
+	SET registered_courses = ARRAY_APPEND(registered_courses, $1)
+	WHERE id = $2
+	`
+	_, err := pool.Exec(context.Background(), query, courseNum, userId)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 func (cr *CourseRepository) DropCourse(*models.EnrollRequest) error {

@@ -44,7 +44,8 @@ func (ch *CourseHandler) EnrollCourse(w http.ResponseWriter, r *http.Request) {
 	// Check availability of course in "courses" table
 	err = ch.CourseRepository.EnrollCourse(&req, currentUserId)
 	if err != nil {
-		log.Println(err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 
 	// TODO: Change so that we use a UUID to act as a foreign key

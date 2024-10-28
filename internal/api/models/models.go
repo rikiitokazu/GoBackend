@@ -19,7 +19,7 @@ type LoginAuth struct {
 	Password string `json:"password"`
 }
 
-type EnrollRequest struct {
+type CourseRequest struct {
 	CourseNumber int       `json:"course_number"`
 	Date         time.Time `json:"date"`
 }

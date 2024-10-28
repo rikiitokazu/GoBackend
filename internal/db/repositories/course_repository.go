@@ -11,8 +11,8 @@ import (
 )
 
 type CourseRepositoryInterface interface {
-	Enroll(*models.EnrollRequest) error
-	DropCourse(*models.EnrollRequest) error
+	Enroll(*models.CourseRequest) error
+	DropCourse(*models.CourseRequest) error
 }
 
 type CourseRepository struct {
@@ -25,7 +25,7 @@ func NewCourseRepository(db *pgxpool.Pool) *CourseRepository {
 	}
 }
 
-func (cr *CourseRepository) EnrollCourse(course *models.EnrollRequest, userId float64) error {
+func (cr *CourseRepository) EnrollCourse(course *models.CourseRequest, userId float64) error {
 	pool := cr.db
 
 	// Check if course.Number is valid
@@ -126,6 +126,6 @@ func (cr *CourseRepository) addCountToUserArray(userId float64, courseNum int) e
 	}
 	return nil
 }
-func (cr *CourseRepository) DropCourse(*models.EnrollRequest) error {
+func (cr *CourseRepository) DropCourse(course *models.CourseRequest, userId float64) error {
 	return nil
 }

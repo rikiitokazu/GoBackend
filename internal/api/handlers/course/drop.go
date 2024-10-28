@@ -1,25 +1,26 @@
 package course
 
-// TODO: We should probably use DynamoDB
-
 import (
 	"encoding/json"
-	"errors"
 	"log"
 	"net/http"
-	"os"
+	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/rikiitokazu/go-backend/internal/api/models"
 )
 
-func (ch *CourseHandler) EnrollCourse(w http.ResponseWriter, r *http.Request) {
+func (ch *CourseHandler) DropCourse(w http.ResponseWriter, r *http.Request) {
+	// TODO: We don't need to check if the user is in the course for now, assumign frontend
+	// Validate Request
 	var req models.CourseRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	// Valid jwt
+	req.Date = time.Now()
+
+	// TODO: Valid jwt function --> move to separate util
 	cookie, err := r.Cookie("Authorization")
 	if err != nil {
 		log.Println("Couldn't receive cookie")
@@ -41,19 +42,18 @@ func (ch *CourseHandler) EnrollCourse(w http.ResponseWriter, r *http.Request) {
 	}
 	currentUserId := claims["sub"].(float64)
 
-	// Check availability of course in "courses" table
-	err = ch.CourseRepository.EnrollCourse(&req, currentUserId)
+	// Call Drop, check error --> returns how long user was in course
+	err = ch.CourseRepository.DropCourse(&req, currentUserId)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	// TODO: Change so that we use a UUID to act as a foreign key
-	// TODO: Unique identifier (customerId) for users, and unique identifier for courses
-
-	// Return http response
+	// Return response
 	response := struct {
-		Status string `json:"status"`
+		Status        string    `json:"status"`
+		CourseDropped int       `json: course_dropped`
+		Duration      time.Time `json: duration`
 	}{
 		Status: "success",
 	}
@@ -66,21 +66,4 @@ func (ch *CourseHandler) EnrollCourse(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(jsonResponse)
-}
-
-// TODO: move to utils
-func verifyToken(tokenString string) (*jwt.Token, error) {
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		return []byte(os.Getenv("TOKEN_SECRET")), nil
-	})
-
-	if err != nil {
-		return token, err
-	}
-
-	if !token.Valid {
-		return token, errors.New("invalid jwt")
-	}
-
-	return token, nil
 }

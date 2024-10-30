@@ -6,30 +6,12 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"os"
 
-	"github.com/joho/godotenv"
 	"github.com/stripe/stripe-go/v78"
 	"github.com/stripe/stripe-go/v78/price"
 )
 
-func HandleConfig(w http.ResponseWriter, r *http.Request) {
-	err := godotenv.Load()
-	if err != nil {
-		log.Println("Couldn't load environment vars")
-		os.Exit(1)
-	}
-	if r.Method != "GET" {
-		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
-		return
-	}
-	writeJSON(w, struct {
-		PublishableKey string `json:"publishableKey"`
-	}{
-		PublishableKey: os.Getenv("STRIPE_PUBLISHABLE_KEY"),
-	})
-}
-
+// TODO: Should all http requests implement this?
 func writeJSON(w http.ResponseWriter, v interface{}) {
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(v); err != nil {
@@ -44,7 +26,7 @@ func writeJSON(w http.ResponseWriter, v interface{}) {
 	}
 }
 
-func getPrice(courseNumber string) string {
+func GetPrice(courseNumber string) string {
 	priceParams := &stripe.PriceSearchParams{
 		SearchParams: stripe.SearchParams{
 			Query: "active:'true'",

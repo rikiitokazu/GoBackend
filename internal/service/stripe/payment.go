@@ -1,13 +1,15 @@
-package service
+package stripe
 
 import (
+	"bytes"
 	"encoding/json"
+	"io"
 	"log"
 	"net/http"
 	"os"
 	"strings"
 
-	"github.com/joho/godotenv"
+	"github.com/rikiitokazu/go-backend/internal/service"
 	"github.com/stripe/stripe-go/v78"
 	"github.com/stripe/stripe-go/v78/checkout/session"
 	"github.com/stripe/stripe-go/v78/customer"
@@ -19,12 +21,12 @@ type CheckoutSessionRequest struct {
 	CourseNumber string `json:"course_number"`
 }
 
-func CreateCheckoutSession(w http.ResponseWriter, r *http.Request) {
-	err := godotenv.Load()
-	if err != nil {
-		log.Println("Couldn't load environment vars")
-		os.Exit(1)
-	}
+// We do not need db access for stripe
+func NewStripe() *CheckoutSessionRequest {
+	return &CheckoutSessionRequest{}
+}
+
+func (cs *CheckoutSessionRequest) CreateCheckoutSession(w http.ResponseWriter, r *http.Request) {
 	// *Reminder to allow access to multiple langugages (japanese)
 	var req CheckoutSessionRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -36,7 +38,7 @@ func CreateCheckoutSession(w http.ResponseWriter, r *http.Request) {
 	req.Email = strings.TrimSpace(req.Email)
 
 	// Getting the correct price tag according to user selection
-	priceKey := getPrice(req.CourseNumber)
+	priceKey := service.GetPrice(req.CourseNumber)
 	if priceKey == "error" {
 		log.Println("Couldn't get accesse to price tag")
 		http.Error(w, "Internal Server Error: Price tag inaccessible", http.StatusInternalServerError)
@@ -89,4 +91,17 @@ func CreateCheckoutSession(w http.ResponseWriter, r *http.Request) {
 		ClientSecret: s.ClientSecret,
 	})
 
+}
+func writeJSON(w http.ResponseWriter, v interface{}) {
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(v); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Printf("json.NewEncoder.Encode: %v", err)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if _, err := io.Copy(w, &buf); err != nil {
+		log.Printf("io.Copy: %v", err)
+		return
+	}
 }

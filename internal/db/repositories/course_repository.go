@@ -25,7 +25,7 @@ func NewCourseRepository(db *pgxpool.Pool) *CourseRepository {
 	}
 }
 
-func (cr *CourseRepository) EnrollCourse(course *models.CourseRequest, userId float64) error {
+func (cr *CourseRepository) EnrollCourse(course *models.CourseRequest, userInfo *models.User) error {
 	pool := cr.db
 
 	// Check if course.Number is valid
@@ -59,7 +59,8 @@ func (cr *CourseRepository) EnrollCourse(course *models.CourseRequest, userId fl
 	// }
 
 	// Check if user is already enrolled in the course
-	err = cr.checkUserInCourse(userId, course.CourseNumber)
+	//TODO: customerId versus userId --> keep homogenous
+	err = cr.checkUserInCourse(userInfo.CustomerID, course.CourseNumber)
 	if err != nil {
 		return err
 	}
@@ -70,7 +71,7 @@ func (cr *CourseRepository) EnrollCourse(course *models.CourseRequest, userId fl
 		return err
 	}
 	// Update student count += 1, and append to registered_courses in users table
-	err = cr.addCountToUserArray(userId, course.CourseNumber)
+	err = cr.addCountToUserArray(userInfo.CustomerID, course.CourseNumber)
 	if err != nil {
 		return err
 	}

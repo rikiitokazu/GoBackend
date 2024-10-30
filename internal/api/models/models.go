@@ -5,7 +5,7 @@ import (
 )
 
 type User struct {
-	CustomerID        int       `json:"id"`
+	CustomerID        float64   `json:"id"`
 	Name              string    `json:"name"`
 	Email             string    `json:"email"`
 	Password          string    `json:"password"`

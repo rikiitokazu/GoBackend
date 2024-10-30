@@ -96,6 +96,7 @@ func loadUserSetupRoutes(router chi.Router, h *handlers.Handlers) {
 func loadCourseSetupRoutes(router chi.Router, h *handlers.Handlers) {
 	router.Post("/enroll", h.CourseHandler.EnrollCourse)
 	router.Delete("/drop", h.CourseHandler.DropCourse)
+	router.Get("/publishableKey", h.CourseHandler.GetPublishableKey)
 }
 
 // /*

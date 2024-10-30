@@ -3,8 +3,10 @@ package course
 // TODO: We should probably use DynamoDB
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -39,10 +41,17 @@ func (ch *CourseHandler) EnrollCourse(w http.ResponseWriter, r *http.Request) {
 		log.Println("Couldn't get claims")
 		return
 	}
-	currentUserId := claims["sub"].(float64)
+	userId := claims["id"].(float64)
+	name := claims["name"].(string)
+	email := claims["email"].(string)
+	userInfo := models.User{
+		CustomerID: userId,
+		Name:       name,
+		Email:      email,
+	}
 
 	// Check availability of course in "courses" table
-	err = ch.CourseRepository.EnrollCourse(&req, currentUserId)
+	err = ch.CourseRepository.EnrollCourse(&req, &userInfo)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -83,4 +92,31 @@ func verifyToken(tokenString string) (*jwt.Token, error) {
 	}
 
 	return token, nil
+}
+
+func (ch *CourseHandler) GetPublishableKey(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "GET" {
+		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
+		return
+	}
+	writeJSON(w, struct {
+		PublishableKey string `json:"publishableKey"`
+	}{
+		PublishableKey: os.Getenv("STRIPE_PUBLISHABLE_KEY"),
+	})
+}
+
+// TODO: Should all http adopt this style
+func writeJSON(w http.ResponseWriter, v interface{}) {
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(v); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Printf("json.NewEncoder.Encode: %v", err)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if _, err := io.Copy(w, &buf); err != nil {
+		log.Printf("io.Copy: %v", err)
+		return
+	}
 }

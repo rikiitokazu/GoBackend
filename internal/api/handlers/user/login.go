@@ -37,8 +37,10 @@ func (uh *UserHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
 
 	// Generate a jwt token
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"sub": req.CustomerID,
-		"exp": time.Now().Add(time.Minute * 1).Unix(),
+		"id":    req.CustomerID,
+		"name":  req.Name,
+		"email": req.Email,
+		"exp":   time.Now().Add(time.Minute * 1).Unix(),
 	})
 	tokenString, err := token.SignedString([]byte(os.Getenv("TOKEN_SECRET")))
 

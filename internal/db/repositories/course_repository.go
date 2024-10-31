@@ -6,7 +6,6 @@ import (
 	"log"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-
 	"github.com/rikiitokazu/go-backend/internal/api/models"
 )
 
@@ -52,17 +51,18 @@ func (cr *CourseRepository) EnrollCourse(course *models.CourseRequest, userInfo 
 	if students > capacity {
 		return errors.New("course is full")
 	}
-	// Enroll in stripe, if it is not free
-	// TODO: For right now, lets assume only course "1" is free
-	// if req.CourseNumber != 1 {
-	// 	log.Println("Enrolling in stripe")
-	// }
 
 	// Check if user is already enrolled in the course
 	//TODO: customerId versus userId --> keep homogenous
 	err = cr.checkUserInCourse(userInfo.CustomerID, course.CourseNumber)
 	if err != nil {
 		return err
+	}
+	// Enroll in stripe, if it is not free
+	// TODO: For right now, lets assume only course "1" is free
+	if course.CourseNumber != 1 {
+		log.Println("Enrolling in stripe")
+
 	}
 
 	// Update course capacity += 1

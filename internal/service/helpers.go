@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/stripe/stripe-go/v78"
 	"github.com/stripe/stripe-go/v78/price"
@@ -26,7 +27,8 @@ func writeJSON(w http.ResponseWriter, v interface{}) {
 	}
 }
 
-func GetPrice(courseNumber string) string {
+func GetPrice(courseNumber int) string {
+	adjustedNumber := strconv.Itoa(courseNumber)
 	priceParams := &stripe.PriceSearchParams{
 		SearchParams: stripe.SearchParams{
 			Query: "active:'true'",
@@ -37,7 +39,7 @@ func GetPrice(courseNumber string) string {
 
 	for result.Next() {
 		p := result.Price()
-		if p.Metadata["course_id"] == courseNumber {
+		if p.Metadata["course_id"] == adjustedNumber {
 			return p.ID
 		}
 	}

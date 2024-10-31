@@ -10,6 +10,9 @@ import (
 	"github.com/stripe/stripe-go/v78"
 )
 
+// TODO: webhook where if we update stripe posting, we update the course db.
+// is the course db necessary if we store it on stripe?
+// ^ if we do this, then we have to update the frontend as well when stripe updates
 func HandleWebhook(w http.ResponseWriter, r *http.Request) {
 	const MaxBodyBytes = int64(65536)
 	r.Body = http.MaxBytesReader(w, r.Body, MaxBodyBytes)

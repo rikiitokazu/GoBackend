@@ -1,6 +1,6 @@
 package course
 
-// TODO: We should probably use DynamoDB
+// TODO: We should probably use DynamoDB or Cosmos DB
 
 import (
 	"bytes"

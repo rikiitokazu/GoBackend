@@ -43,6 +43,6 @@ func GetPrice(courseNumber int) string {
 			return p.ID
 		}
 	}
-	return "error"
+	return ""
 
 }

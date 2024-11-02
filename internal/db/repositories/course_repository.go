@@ -7,6 +7,7 @@ import (
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/rikiitokazu/go-backend/internal/api/models"
+	"github.com/rikiitokazu/go-backend/internal/service/payment"
 )
 
 type CourseRepositoryInterface interface {
@@ -61,8 +62,10 @@ func (cr *CourseRepository) EnrollCourse(course *models.CourseRequest, userInfo 
 	// Enroll in stripe, if it is not free
 	// TODO: For right now, lets assume only course "1" is free
 	if course.CourseNumber != 1 {
-		log.Println("Enrolling in stripe")
-
+		err := payment.CreateCheckoutSession(course.CourseNumber, userInfo)
+		if err != nil {
+			return err
+		}
 	}
 
 	// Update course capacity += 1

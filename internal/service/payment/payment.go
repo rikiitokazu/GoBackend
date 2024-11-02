@@ -21,17 +21,18 @@ func CreateCheckoutSession(courseNum int, userInfo *models.User) error {
 	domain := os.Getenv("FRONTEND_ROUTE")
 
 	// 1) Get the correct course based on courseNum
-	// 2) Register that user for the course
-	// 2.1) if not using course db, make sure that we check if its full first, but we did that in db step
-	// Getting the correct price tag according to user selection
-	// 3) Add that user as a customer that is associated with the course purchase
-
+	// TODO: Is the courseNum going to be the ProductID?
+	// Price key is needed in order to get the course according to stripe-docs
 	priceKey := service.GetPrice(courseNum)
-	if priceKey == "error" {
+	if priceKey == "" {
 		log.Println("Couldn't get accesse to price tag")
 		// http.Error(w, "Internal Server Error: Price tag inaccessible", http.StatusInternalServerError)
-		return nil
+		return errors.New("failed to get price key")
 	}
+
+	// 2) Register that user for the course
+	// 2.1) if not using course db, make sure that we check if its full first, but we did that in db step
+	// 3) Add that user as a customer that is associated with the course purchase
 
 	// Creating new customer session
 	customerParams := &stripe.CustomerParams{
@@ -43,6 +44,7 @@ func CreateCheckoutSession(courseNum int, userInfo *models.User) error {
 	customerResult, err := customer.New(customerParams)
 	if err != nil {
 		log.Printf("session.New: %v", err)
+		return err
 	}
 
 	// Parameters for checkout session for customer above
@@ -63,6 +65,7 @@ func CreateCheckoutSession(courseNum int, userInfo *models.User) error {
 	s, err := session.New(params)
 	if err != nil {
 		log.Printf("session.New: %v", err)
+		return err
 	}
 
 	// Returning the client secret

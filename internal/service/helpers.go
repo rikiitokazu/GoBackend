@@ -1,5 +1,7 @@
 package service
 
+// service layer could be renamed middleware
+// go/pkg for any logic we wish to expose as a "package"
 import (
 	"bytes"
 	"encoding/json"

@@ -28,6 +28,3 @@ go.work.sum
 # air (live refresh)
 /tmp
 .air.toml
-
-# todo list
-TODO.txt

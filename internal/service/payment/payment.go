@@ -4,7 +4,6 @@ import (
 	"errors"
 	"log"
 	"os"
-	"strconv"
 
 	"github.com/rikiitokazu/go-backend/internal/api/models"
 	"github.com/rikiitokazu/go-backend/internal/service"
@@ -31,23 +30,18 @@ func CreateCheckoutSession(courseNum int, userInfo *models.User) error {
 	}
 
 	// 2) Register that user for the course
-	// 2.1) if not using course db, make sure that we check if its full first, but we did that in db step
-	// 3) Add that user as a customer that is associated with the course purchase
-
-	// Creating new customer session
 	customerParams := &stripe.CustomerParams{
 		Name:  stripe.String(userInfo.Name),
 		Email: stripe.String(userInfo.Email),
 	}
-	courseToString := strconv.Itoa(courseNum)
-	customerParams.AddMetadata("course_id", courseToString)
 	customerResult, err := customer.New(customerParams)
 	if err != nil {
 		log.Printf("session.New: %v", err)
 		return err
 	}
 
-	// Parameters for checkout session for customer above
+	// TODO: 2.1) if not using course db, make sure that we check if its full first, but we did that in db step
+	// 3) Add that user as a customer that is associated with the course purchase
 	params := &stripe.CheckoutSessionParams{
 		UIMode:    stripe.String("embedded"),
 		ReturnURL: stripe.String(domain + "/return?session_id={CHECKOUT_SESSION_ID}"),
@@ -73,6 +67,7 @@ func CreateCheckoutSession(courseNum int, userInfo *models.User) error {
 		log.Println("ClientSecret is empty. Unable to process the payment.")
 		return errors.New("client secret is empty")
 	}
+	log.Println("Stripe successful")
 	return nil
 
 }

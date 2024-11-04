@@ -149,12 +149,8 @@ func (cr *CourseRepository) DropCourse(course *models.CourseRequest, userId floa
 		return errors.New("course does not exist")
 	}
 
-	// Check if user is in course
-	// TODO: Probably redundant
-	err = cr.checkUserInCourse(userId, course.CourseNumber)
-	if err != nil {
-		return err
-	}
+	// TODO: Do we need to check if the user is actually enrolled, or are we assuming it
+	// will always be valid?
 
 	// Remove the element from the registered_courses column in the users table
 	query = `

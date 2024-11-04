@@ -40,7 +40,7 @@ func (ch *CourseHandler) DropCourse(w http.ResponseWriter, r *http.Request) {
 		log.Println("Couldn't get claims")
 		return
 	}
-	currentUserId := claims["sub"].(float64)
+	currentUserId := claims["id"].(float64)
 
 	// Call Drop, check error
 	err = ch.CourseRepository.DropCourse(&req, currentUserId)

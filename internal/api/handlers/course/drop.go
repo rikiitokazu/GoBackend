@@ -11,7 +11,6 @@ import (
 )
 
 func (ch *CourseHandler) DropCourse(w http.ResponseWriter, r *http.Request) {
-	// TODO: We don't need to check if the user is in the course for now, assumign frontend
 	// Validate Request
 	var req models.CourseRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {

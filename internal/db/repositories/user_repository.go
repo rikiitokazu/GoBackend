@@ -49,9 +49,10 @@ func (ur *UserRepository) VerifyUserExists(user *models.User) error {
 func (ur *UserRepository) Login(user *models.User) error {
 	pool := ur.db
 	var encryptedPassword string
-	query := `SELECT id, password from users
+	query := `SELECT id, password, registered_courses from users
 	WHERE email = $1`
-	err := pool.QueryRow(context.Background(), query, user.Email).Scan(&user.CustomerID, &encryptedPassword)
+	err := pool.QueryRow(context.Background(), query, user.Email).
+		Scan(&user.CustomerID, &encryptedPassword, &user.RegisteredCourses)
 	if err != nil {
 		return err
 	}

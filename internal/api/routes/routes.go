@@ -7,6 +7,8 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 	"github.com/jackc/pgx/v5/pgxpool"
+
+	// "github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/rikiitokazu/go-backend/internal/api/handlers"
 )
 
@@ -47,6 +49,9 @@ func LoadRoutes(db *pgxpool.Pool, h *handlers.Handlers) *chi.Mux {
 	router.Route("/course", func(router chi.Router) {
 		loadCourseSetupRoutes(router, h)
 	})
+
+	// router.Route("/metrics", promhttp.Handler())
+
 	// router.Route("/webhook", a.loadWebhookRouter)
 
 	/*

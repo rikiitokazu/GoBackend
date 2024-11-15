@@ -9,7 +9,6 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
-	// "github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/rikiitokazu/go-backend/internal/api/handlers"
 )
 
@@ -36,10 +35,6 @@ func LoadRoutes(db *pgxpool.Pool, h *handlers.Handlers) *chi.Mux {
 		w.WriteHeader(http.StatusOK)
 	})
 
-	// test := &Test{
-	// 	db: h,
-	// }
-
 	// Subrouters
 	// router.Route("/config", loadConfigRoute)
 	// router.Route("/create-checkout-session", a.loadCheckoutRoute)
@@ -49,6 +44,9 @@ func LoadRoutes(db *pgxpool.Pool, h *handlers.Handlers) *chi.Mux {
 	})
 	router.Route("/course", func(router chi.Router) {
 		loadCourseSetupRoutes(router, h)
+	})
+	router.Route("/util", func(router chi.Router) {
+		loadUtilSetupRoutes(router, h)
 	})
 
 	// router.Route("/metrics", promhttp.Handler())
@@ -66,16 +64,7 @@ func LoadRoutes(db *pgxpool.Pool, h *handlers.Handlers) *chi.Mux {
 	return router
 }
 
-/*
-Retruns stripe publishable key
-
-	Could make it public on frontend if you wanted
-*/
-// func loadConfigRoute(router chi.Router) {
-// 	router.Get("/", handler.HandleConfig)
-// }
-
-// // Loads checkout router for payment
+// Loads checkout router for payment
 // func (a *App) loadCheckoutRoute(router chi.Router) {
 // 	paymentHandler := &handler.Payment{
 // 		DatabaseConn: &database.Database{
@@ -86,10 +75,15 @@ Retruns stripe publishable key
 // 	router.Post("/", paymentHandler.CreateCheckoutSession)
 // }
 
-// // Handles router after payment has been made
-// func loadRetrieveRoute(router chi.Router) {
-// 	router.Get("/", handler.RetrieveCheckoutSession)
-// }
+// Handles router after payment has been made
+//
+//	func loadRetrieveRoute(router chi.Router) {
+//		router.Get("/", handler.RetrieveCheckoutSession)
+//	}
+func loadUtilSetupRoutes(router chi.Router, h *handlers.Handlers) {
+	// Stripe public key
+	router.Get("/payment-config", h.HandleConfig)
+}
 
 // // All functions/routes related to the database
 func loadUserSetupRoutes(router chi.Router, h *handlers.Handlers) {

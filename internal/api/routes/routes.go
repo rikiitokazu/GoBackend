@@ -81,11 +81,10 @@ func LoadRoutes(db *pgxpool.Pool, h *handlers.Handlers) *chi.Mux {
 //		router.Get("/", handler.RetrieveCheckoutSession)
 //	}
 func loadUtilSetupRoutes(router chi.Router, h *handlers.Handlers) {
-	// Stripe public key
-	router.Get("/payment-config", h.HandleConfig)
+	// GET -- Stripe public key
+	router.Get("/payment-config", h.UtilsHandler.GetPublishableKey)
 }
 
-// // All functions/routes related to the database
 func loadUserSetupRoutes(router chi.Router, h *handlers.Handlers) {
 
 	// router.Post("/check-active-user", databaseConn.CheckActiveUser)
@@ -99,7 +98,6 @@ func loadUserSetupRoutes(router chi.Router, h *handlers.Handlers) {
 func loadCourseSetupRoutes(router chi.Router, h *handlers.Handlers) {
 	router.Post("/enroll", h.CourseHandler.EnrollCourse)
 	router.Delete("/drop", h.CourseHandler.DropCourse)
-	router.Get("/publishableKey", h.CourseHandler.GetPublishableKey)
 }
 
 func loadPrometheusRoute(router chi.Router, h *handlers.Handlers) {

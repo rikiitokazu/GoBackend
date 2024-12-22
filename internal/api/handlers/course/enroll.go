@@ -3,10 +3,8 @@ package course
 // TODO: We should probably use DynamoDB or Cosmos DB
 
 import (
-	"bytes"
 	"encoding/json"
 	"errors"
-	"io"
 	"log"
 	"net/http"
 	"os"
@@ -92,31 +90,4 @@ func verifyToken(tokenString string) (*jwt.Token, error) {
 	}
 
 	return token, nil
-}
-
-func (ch *CourseHandler) GetPublishableKey(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "GET" {
-		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
-		return
-	}
-	writeJSON(w, struct {
-		PublishableKey string `json:"publishableKey"`
-	}{
-		PublishableKey: os.Getenv("STRIPE_PUBLISHABLE_KEY"),
-	})
-}
-
-// TODO: Should all http adopt this style
-func writeJSON(w http.ResponseWriter, v interface{}) {
-	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(v); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		log.Printf("json.NewEncoder.Encode: %v", err)
-		return
-	}
-	w.Header().Set("Content-Type", "application/json")
-	if _, err := io.Copy(w, &buf); err != nil {
-		log.Printf("io.Copy: %v", err)
-		return
-	}
 }
